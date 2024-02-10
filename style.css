@@ -1,0 +1,105 @@
+@font-face {
+    font-family: 'Pokemon';
+    src: url('./Pocket\ Monk.otf') format('truetype'); /* Substitua pelo caminho real da sua fonte */
+}
+ 
+body {
+    background-color: rgb(255, 255, 255);
+}
+
+h1 {
+    font-family: 'Pokemon', cursive;
+    font-size: 40px;
+    text-align: center;
+    color: #ffff00;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+}
+
+.search-form {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin: 10px;
+}
+
+.button {
+    margin: 10px;
+    padding: 10px;
+    font-size: 20px;
+    font-family: 'Arial', bold;
+    color: white;
+    background-color: rgb(4, 100, 190);
+    border-radius: 10px;
+}
+
+.container-pokemons {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.pokemon-card {
+    width: 200px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .pokemon-card img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+  }
+  
+  .pokemon-card h2 {
+    margin-top: 0;
+    font-size: 20px;
+    color: #333;
+  }
+  
+  .pokemon-card p {
+    font-size: 16px;
+    color: #666;
+  }
+  
+
+.container-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    background-color: rgb(4, 100, 190);
+    width: 100%;
+    height: 150px;
+}
+
+.pokebola {
+    width: auto;
+    height: auto;
+}
+
+.pokedex {
+    margin-right: -200px; /* Adiciona margem à esquerda para reduzir a distância */
+}
+
+#search-input {
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    color: #333;
+    background-color: #fff; 
+    padding: 8px 12px;
+    width: 200px;
+    height: 20px;
+    border: 1px solid #ccc; 
+    border-radius: 4px; 
+  }
+  

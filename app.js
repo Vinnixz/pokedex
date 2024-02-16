@@ -22,14 +22,12 @@ function displayPokemon(pokemonData) {
     pokemonCard.style.borderRadius = '8px';
     pokemonCard.style.padding = '10px'; pokemonCard.innerHTML = `
         <h2>${pokemonData.name}</h2>
-        <p>nº: #${pokemonData.id}</p>
+        <p class="number" style="background-color:${typeColor}">nº: #${pokemonData.id}</p>
         <img src="${pokemonData.sprites.other.dream_world.front_default}" alt="${pokemonData.name}" />
         <p>Height: ${pokemonData.height}</p>
         <p>Weight: ${pokemonData.weight}</p>
         <h3>Types:</h3>
-        <ul>
             ${pokemonData.types.map(type => `<li>${type.type.name}</li>`).join('')}
-        </ul>
     `;
     return pokemonCard;
 }
@@ -61,20 +59,27 @@ function getTypeColor(type) {
 
 document.addEventListener("DOMContentLoaded", function() {
     const pokemonContainer = document.getElementById('pokemon-container');
+    const pokemonPromises = [];
 
     fetch('https://pokeapi.co/api/v2/pokemon?limit=16')
         .then(response => response.json())
         .then(data => {
             data.results.forEach(pokemon => {
-                fetch(pokemon.url)
-                    .then(response => response.json())
-                    .then(pokemonData => {
+                pokemonPromises.push(
+                    fetch(pokemon.url)
+                        .then(response => response.json())
+                );
+            });
+
+            Promise.all(pokemonPromises)
+                .then(pokemonDataArray => {
+                    pokemonDataArray.forEach(pokemonData => {
                         const pokemonCard = displayPokemon(pokemonData);
                         pokemonContainer.appendChild(pokemonCard);
                     });
-            });
-        })
-        .catch(error => console.error('Erro ao carregar os Pokémon:', error));
+                })
+                .catch(error => console.error('Erro ao carregar os Pokémon:', error));
+        });
 });
 
 document.getElementById('search-form').addEventListener('submit', function(event) {
@@ -88,3 +93,4 @@ document.getElementById('search-form').addEventListener('submit', function(event
             pokemonContainer.appendChild(pokemonCard);
         });
 });
+

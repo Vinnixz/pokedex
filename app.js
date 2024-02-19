@@ -13,6 +13,16 @@ function getPokemonInfo(pokemonNameOrId) {
         });
 }
 
+function getPokemonImage(pokemonData) {
+    if (pokemonData.sprites.other['dream_world'].front_default) {
+        return pokemonData.sprites.other['dream_world'].front_default;
+    } else if (pokemonData.sprites.other['official-artwork'].front_default) {
+        return pokemonData.sprites.other['official-artwork'].front_default;
+    } else {
+        return 'https://via.placeholder.com/150';
+    }
+}
+
 function displayPokemon(pokemonData) {
     const pokemonCard = document.createElement('div');
     pokemonCard.classList.add('pokemon-card');
@@ -22,10 +32,11 @@ function displayPokemon(pokemonData) {
     pokemonCard.style.borderTop = `5px solid ${typeColor}`;
     pokemonCard.style.borderRadius = '8px';
     pokemonCard.style.backgroundColor = `${typeColorTransparent}`;
-    pokemonCard.style.padding = '10px'; pokemonCard.innerHTML = `
+    pokemonCard.style.padding = '10px'; 
+    pokemonCard.innerHTML = `
         <h2>${pokemonData.name}</h2>
         <p class="number" style="color: #686868;">nº: #${pokemonData.id}</p>
-        <img src="${pokemonData.sprites.other.dream_world.front_default}" alt="${pokemonData.name}" />
+        <img src="${getPokemonImage(pokemonData)}" alt="${pokemonData.name}" />
         <p>Height: ${pokemonData.height}</p>
         <p>Weight: ${pokemonData.weight}</p>
         <h4>Types:</h4>
@@ -86,31 +97,82 @@ function getTypeColors(type) {
     return typeColorTransparent[type.toLowerCase()] || 'rgba(176, 176, 176, 0.1)';
 }
 
-
-document.addEventListener("DOMContentLoaded", function() {
+function loadMorePokemon(offset = 0, typeFilter = '') {
     const pokemonContainer = document.getElementById('pokemon-container');
-    const pokemonPromises = [];
+    const limit = 20; 
+    let apiUrl = `https://pokeapi.co/api/v2/pokemon?offset=${offset}&limit=${limit}`;
+    
+    // Se um tipo foi selecionado, adiciona o filtro à URL da API
+    if (typeFilter) {
+        apiUrl += `&type=${typeFilter}`;
+    }
 
-    fetch('https://pokeapi.co/api/v2/pokemon?limit=16')
+    console.log("API URL:", apiUrl); // Verifica a URL da API
+    
+    fetch(apiUrl)
         .then(response => response.json())
         .then(data => {
+            console.log("Pokémon filtrados:", data.results); // Verifica os Pokémon filtrados
+            const newPokemonPromises = [];
             data.results.forEach(pokemon => {
-                pokemonPromises.push(
+                newPokemonPromises.push(
                     fetch(pokemon.url)
                         .then(response => response.json())
+                        .catch(error => console.error('Erro ao carregar os Pokémon:', error))
                 );
             });
 
-            Promise.all(pokemonPromises)
+            Promise.all(newPokemonPromises)
                 .then(pokemonDataArray => {
                     pokemonDataArray.forEach(pokemonData => {
-                        const pokemonCard = displayPokemon(pokemonData);
-                        pokemonContainer.appendChild(pokemonCard);
+                        if (!document.querySelector(`.pokemon-card[data-pokemon-id="${pokemonData.id}"]`)) {
+                            const pokemonCard = displayPokemon(pokemonData);
+                            pokemonCard.setAttribute('data-pokemon-id', pokemonData.id);
+                            pokemonContainer.appendChild(pokemonCard);
+                        }
                     });
                 })
                 .catch(error => console.error('Erro ao carregar os Pokémon:', error));
-        });
+        })
+        .catch(error => console.error('Erro ao carregar a lista de Pokémon:', error));
+}
+
+function handleScroll() {
+    if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+        const pokemonContainer = document.getElementById('pokemon-container');
+        const currentOffset = pokemonContainer.querySelectorAll('.pokemon-card').length;
+        loadMorePokemon(currentOffset);
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    const searchForm = document.getElementById('search-form');
+    const typeFilter = document.getElementById('type-filter');
+
+    loadMorePokemon(); // Carrega os Pokémon inicialmente
+
+    window.addEventListener('scroll', handleScroll);
+
+    searchForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const searchTerm = document.getElementById('search-input').value.toLowerCase();
+        getPokemonInfo(searchTerm)
+            .then(pokemonData => {
+                const pokemonContainer = document.getElementById('pokemon-container');
+                pokemonContainer.innerHTML = ''; // Limpa o conteúdo anterior
+                const pokemonCard = displayPokemon(pokemonData);
+                pokemonContainer.appendChild(pokemonCard);
+            })
+            .catch(error => console.error('Erro ao obter informações do Pokémon:', error));
+    });
+
+    typeFilter.addEventListener('change', function() {
+        const pokemonContainer = document.getElementById('pokemon-container');
+        pokemonContainer.innerHTML = ''; // Limpa o conteúdo anterior
+        loadMorePokemon(0, typeFilter.value);
+    });
 });
+
 
 document.getElementById('search-form').addEventListener('submit', function(event) {
     event.preventDefault();
@@ -122,5 +184,39 @@ document.getElementById('search-form').addEventListener('submit', function(event
             const pokemonCard = displayPokemon(pokemonData);
             pokemonContainer.appendChild(pokemonCard);
         });
+});
+
+document.addEventListener("DOMContentLoaded", function() {
+    const pokemonContainer = document.getElementById('pokemon-container');
+
+    pokemonContainer.addEventListener('click', function(event) {
+        const pokemonCard = event.target.closest('.pokemon-card');
+        if (pokemonCard) {
+            if (pokemonCard.classList.contains('pokemon-card-clicked')) {
+                pokemonCard.classList.remove('pokemon-card-clicked');
+            } else {
+                const allPokemonCards = pokemonContainer.querySelectorAll('.pokemon-card');
+                allPokemonCards.forEach(card => card.classList.remove('pokemon-card-clicked'));
+                pokemonCard.classList.add('pokemon-card-clicked');
+            }
+        }
+    });
+});
+
+document.addEventListener("DOMContentLoaded", function() {
+    const pokemonContainer = document.getElementById('pokemon-container');
+    const searchForm = document.getElementById('search-form');
+
+    searchForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const searchTerm = document.getElementById('search-input').value.toLowerCase();
+        getPokemonInfo(searchTerm)
+            .then(pokemonData => {
+                pokemonContainer.innerHTML = ''; 
+                const pokemonCard = displayPokemon(pokemonData);
+                pokemonContainer.appendChild(pokemonCard);
+            })
+            .catch(error => console.error('Erro ao obter informações do Pokémon:', error));
+    });
 });
 

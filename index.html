@@ -3,25 +3,26 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="./style.css"/>
+    <link rel="stylesheet" href="./style.css" />
     <title>Pokedex</title>
-    
   </head>
   <body>
-    <main>
-      <div class="container-header">
-        <img class="pokedex" src="./img/Pokedex.svg" alt="">
-        <img class="pokebola" src="./img/Pokebola.svg" alt="pokebola">
+    <div class="container-header">
+      <img class="pokedex" src="./img/Pokedex.svg" alt="" />
+      <img class="pokebola" src="./img/Pokebola.svg" alt="pokebola" />
     </div>
     <div class="search">
-      <form class="search-form">
-        <input type="text" class="search-input" placeholder="Digite aqui" />
+      <form class="search-form" id="search-form">
+        <input
+          type="text"
+          class="search-input"
+          id="search-input"
+          placeholder="Digite aqui"
+        />
         <button class="button" type="submit">Buscar</button>
-    </div> 
-    </form>
-      <div class="container-pokemons" id="pokemon-container"></div>
-    </main>
+      </form>
+    </div>
+    <div class="container-pokemons" id="pokemon-container"></div>
     <script src="./app.js"></script>
-   
   </body>
 </html>

@@ -6,7 +6,6 @@
 }
  
 * {
-    box-sizing: border-box;
     margin: 0;
     padding: 0;
     font-family: "Pokemon", sans-serif;
@@ -15,10 +14,10 @@
 body {
     background-color: linear-gradient(to right, #d4d3dd, #efefbb);
     display: flex;
-   flex-direction: column;
-   align-items: center;
-   justify-content: center;
-}
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+} 
 
 h1 {
     letter-spacing: 5px;
@@ -82,15 +81,24 @@ h1 {
     text-align: center;
     width: 250px;
     height: 300px;
+    transition: transform 0.2s;
 }
 
 .pokemon-card img {
-    width: 100px; /* Ajuste o tamanho da imagem conforme necessário */
+    width: 100px; 
     height: 100px;
-    overflow: hidden; /* Esconda qualquer parte da imagem que se estenda além do círculo */
-    margin-bottom: 10px; /* Adicione margem inferior para separar a imagem do resto do conteúdo */
+    overflow: hidden; 
+    margin-bottom: 10px;
 }
 
+.pokemon-card-clicked {
+    transform: scale(1.2); 
+    z-index: 1000;
+}
+
+.pokemon-card:hover {
+    transform: scale(1.05);
+}
 
 .pokemon-card h2 {
     margin-top: 0;
